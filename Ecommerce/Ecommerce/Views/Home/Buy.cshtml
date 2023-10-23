@@ -1,0 +1,36 @@
+﻿@model Ecommerce.EF.Product
+
+@{
+    ViewBag.Title = "Buy";
+}
+
+<h2>Buy</h2>
+
+<div>
+    <h4>Product</h4>
+    <hr />
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.ProductName)</th>
+            <td>@Html.DisplayFor(model => model.ProductName)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.ProductDetails)</th>
+            <td>@Html.DisplayFor(model => model.ProductDetails)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.ProductPrice)</th>
+            <td>@Html.DisplayFor(model => model.ProductPrice)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Category1.CategoryName)</th>
+            <td>@Html.DisplayFor(model => model.Category1.CategoryName)</td>
+        </tr>
+    </table>
+</div>
+
+<p align="center">
+    @Html.ActionLink("Order", "Order", new { id = Model.id }, new { @class = "btn btn-primary" }) |
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "btn btn-secondary" })
+
+</p>

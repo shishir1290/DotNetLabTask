@@ -1,0 +1,56 @@
+﻿@model Ecommerce.Models.ViewModel
+
+@{
+    ViewBag.Title = "Order";
+}
+
+<h2>Order</h2>
+
+<div>
+    <h3>Customer Profile</h3>
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Customer.Name)</th>
+            <td>@Model.Customer.Name</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Customer.Email)</th>
+            <td>@Model.Customer.Email</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Customer.Phone)</th>
+            <td>@Model.Customer.Phone</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Customer.Address)</th>
+            <td>@Model.Customer.Address</td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    <h3>Order Details</h3>
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Product.ProductName)</th>
+            <td>@Html.DisplayFor(model => model.Product.ProductName)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Product.ProductDetails)</th>
+            <td>@Html.DisplayFor(model => model.Product.ProductDetails)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Product.ProductPrice)</th>
+            <td>@Html.DisplayFor(model => model.Product.ProductPrice)TK</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Product.Category1.CategoryName)</th>
+            <td>@Html.DisplayFor(model => model.Product.Category1.CategoryName)</td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Product.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</div>
