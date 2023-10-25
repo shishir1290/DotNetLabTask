@@ -12,21 +12,23 @@ namespace Ecommerce.EF
     using System;
     using System.Collections.Generic;
     
-    public partial class Product
+    public partial class User
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Product()
+        public User()
         {
             this.Orders = new HashSet<Order>();
         }
     
         public int id { get; set; }
-        public string ProductName { get; set; }
-        public string ProductDetails { get; set; }
-        public int ProductPrice { get; set; }
-        public int category { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public int Phone { get; set; }
+        public string Gender { get; set; }
+        public string Address { get; set; }
+        public string Password { get; set; }
+        public string UserType { get; set; }
     
-        public virtual Category Category1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
     }

@@ -21,16 +21,16 @@ else
             </tr>
         </thead>
         <tbody>
-            @for (var i = 0; i < Model.Count; i++)
+            @foreach (var item in Model)
             {
-                string[] cartItemParts = Model[i].Split('|');
-                if (cartItemParts.Length >= 2)
+                string[] cartItemParts = item.Split('|');
+                if (cartItemParts.Length >= 3) // Ensure you have product ID, name, and price
                 {
                     <tr>
-                        <td>@cartItemParts[0]</td>
                         <td>@cartItemParts[1]</td>
+                        <td>@cartItemParts[2]</td>
                         <td>
-                            @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { index = i }, new { @class = "btn btn-danger" })
+                            @Html.ActionLink("Delete", "DeleteCartItem", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
                         </td>
                     </tr>
                 }
@@ -38,7 +38,7 @@ else
         </tbody>
     </table>
 
-    @Html.ActionLink("Clear Cart", "ClearCart", "Home", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Order All", "OrderAll", "Home", null, new { @class = "btn btn-primary" })
 }
 
 @Html.ActionLink("Continue Shopping", "Index", "Home")

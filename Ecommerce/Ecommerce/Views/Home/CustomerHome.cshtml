@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Ecommerce.EF.Product>
+
+@{
+    ViewBag.Title = "CustomerHome";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductDetails)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category1.CategoryName)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProductName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProductDetails)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProductPrice)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Category1.CategoryName)
+        </td>
+        <td>
+            @Html.ActionLink("Buy", "Buy", new { id = item.id }, new { @class = "btn btn-success" }) |
+            @Html.ActionLink("Add to Cart", "AddToCart", new { id = item.id }, new { @class = "btn btn-success" })
+        </td>
+    </tr>
+}
+
+</table>

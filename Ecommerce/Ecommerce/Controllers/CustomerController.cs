@@ -8,7 +8,7 @@ namespace Ecommerce.Controllers
 {
     public class CustomerController : Controller
     {
-        private ProductEntities db = new ProductEntities();
+        private ProductEntities1 db = new ProductEntities1();
 
         [HttpGet]
         public ActionResult Signup()
@@ -16,30 +16,41 @@ namespace Ecommerce.Controllers
             return View();
         }
 
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Signup(CustomerSignupModel customer)
+        public ActionResult Signup(CustomerSignupModel user)
         {
             if (ModelState.IsValid)
             {
-                var newCustomer = new Customer
+                // Check if the email already exists in the database
+                /*if (db.Users.Any(u => u.Email == user.Email))
                 {
-                    Name = customer.Name,
-                    Email = customer.Email,
-                    Phone = customer.Phone,
-                    Gender = customer.Gender,
-                    Address = customer.Address,
-                    Password = customer.Password
+                    ModelState.AddModelError("Email", "Email already in use. Please use a different email.");
+                    return View(user);
+                }*/
+
+                var newUser = new User
+                {
+                    Name = user.Name,
+                    Email = user.Email,
+                    Phone = user.Phone,
+                    Gender = user.Gender,
+                    Address = user.Address,
+                    Password = user.Password,
+                    UserType = user.UserType
                 };
 
-                db.Customers.Add(newCustomer);
+                db.Users.Add(newUser);
                 db.SaveChanges();
 
                 return RedirectToAction("Login"); // Redirect to the desired action after a successful signup
             }
 
-            return View(customer);
+            return View(user);
         }
+
 
 
         [HttpGet]
@@ -54,12 +65,26 @@ namespace Ecommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                var customer = db.Customers.SingleOrDefault(c => c.Email == loginModel.Email && c.Password == loginModel.Password);
-                if (customer != null)
+                var user = db.Users.SingleOrDefault(c => c.Email == loginModel.Email && c.Password == loginModel.Password);
+                if (user != null)
                 {
                     // Authentication successful
-                    Session["CustomerEmail"] = customer.Email;
-                    return RedirectToAction("Index", "Home"); // Redirect to the desired page after login
+                    Session["CustomerEmail"] = user.Email;
+
+                    // Check the user type and redirect accordingly
+                    if (user.UserType == "Customer")
+                    {
+                        return RedirectToAction("CustomerHome", "Home"); // Redirect to the customer home page
+                    }
+                    else if (user.UserType == "Admin")
+                    {
+                        return RedirectToAction("AdminHome", "Home"); // Redirect to the admin home page
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Invalid user type. Please try again.");
+                        return View(loginModel);
+                    }
                 }
                 else
                 {
@@ -68,6 +93,8 @@ namespace Ecommerce.Controllers
             }
             return View(loginModel);
         }
+
+
 
     }
 }

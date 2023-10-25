@@ -12,10 +12,10 @@ namespace Ecommerce.Controllers
 {
     public class HomeController : Controller
     {
-        private ProductEntities db = new ProductEntities();
+        private ProductEntities1 db = new ProductEntities1();
         // GET: Home
         [Logged]
-        public ActionResult Index()
+        public ActionResult CustomerHome()
         {
             var productList = db.Products.ToList();
             return View(productList);
@@ -29,7 +29,7 @@ namespace Ecommerce.Controllers
             if (product == null)
             {
                 // Product not found, you can handle this case (e.g., show an error message)
-                return RedirectToAction("Index"); // Redirect to some other page
+                return RedirectToAction("CustomerHome"); // Redirect to some other page
             }
 
             return View(product);
@@ -48,13 +48,13 @@ namespace Ecommerce.Controllers
             }
 
             // Query the database to retrieve the customer's profile
-            var profile = db.Customers.FirstOrDefault(cp => cp.Email == customerEmail);
+            var profile = db.Users.FirstOrDefault(cp => cp.Email == customerEmail);
 
             if (profile == null)
             {
                 // Handle the case where the profile is not found
                 // You can redirect to an error page or take another appropriate action
-                return RedirectToAction("Index", "Home"); // Redirect to a default page for this example
+                return RedirectToAction("CustomerHome", "Home"); // Redirect to a default page for this example
             }
 
             // Pass the customer's profile to the view
@@ -74,11 +74,11 @@ namespace Ecommerce.Controllers
             }
 
             // Retrieve the customer's profile
-            var customerProfile = db.Customers.FirstOrDefault(cp => cp.Email == customerEmail);
+            var customerProfile = db.Users.FirstOrDefault(cp => cp.Email == customerEmail);
             if (customerProfile == null)
             {
                 // Customer profile not found, handle appropriately
-                return RedirectToAction("Index", "Home"); // Redirect to a default page
+                return RedirectToAction("CustomerHome", "Home"); // Redirect to a default page
             }
 
             // Retrieve the order
@@ -86,7 +86,7 @@ namespace Ecommerce.Controllers
             if (order == null)
             {
                 // Order not found, handle appropriately (e.g., show an error message)
-                return RedirectToAction("Index"); // Redirect to some other page
+                return RedirectToAction("CustomerHome"); // Redirect to some other page
             }
 
             // Create an instance of the view model and populate it
@@ -130,24 +130,49 @@ namespace Ecommerce.Controllers
                 string cookieName = "CartItems_" + id;
                 HttpCookie cartCookie = Request.Cookies[cookieName] ?? new HttpCookie(cookieName);
 
-                // Add the item to the cart
-                cartCookie.Value = string.Join(",", (cartCookie.Value + "," + product.ProductName + "|" + product.ProductPrice).Split(',').Distinct());
-                cartCookie.Expires = DateTime.Now.AddDays(7);
+                // Split the existing cart items into an array
+                string[] cartItems = cartCookie.Value.Split(',');
 
-                Response.Cookies.Add(cartCookie);
+                // Check if the product is already in the cart
+                bool productInCart = false;
+
+                for (int i = 0; i < cartItems.Length; i++)
+                {
+                    string[] cartItemParts = cartItems[i].Split('|');
+                    if (cartItemParts.Length >= 2)
+                    {
+                        var existingProductId = cartItemParts[0];
+                        if (int.TryParse(existingProductId, out int existingId) && existingId == id)
+                        {
+                            // The product is already in the cart; you can choose to update its quantity or handle as needed
+                            productInCart = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!productInCart)
+                {
+                    // Add the item to the cart
+                    cartItems = cartItems.Concat(new[] { $"{product.id}|{product.ProductName}|{product.ProductPrice}" }).ToArray();
+                    cartCookie.Value = string.Join(",", cartItems);
+                    cartCookie.Expires = DateTime.Now.AddDays(7);
+                    Response.Cookies.Add(cartCookie);
+                }
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("CustomerHome");
         }
 
 
 
-        [Logged]
-        public ActionResult DeleteCartItem(int index)
-        {
-            List<string> cartItems = new List<string>();
 
-            // Retrieve the cart items from cookies
+        [Logged]
+        public ActionResult DeleteCartItem(int id)
+        {
+            // Find and remove the item with the specified ID
+            var cartItems = new List<string>();
+
             foreach (var cookieName in Request.Cookies.AllKeys)
             {
                 if (cookieName.StartsWith("CartItems_"))
@@ -158,13 +183,21 @@ namespace Ecommerce.Controllers
                 }
             }
 
-            // Remove the item at the specified index
-            if (index >= 0 && index < cartItems.Count)
+            // Filter out the item with the specified ID
+            cartItems = cartItems.Where(item =>
             {
-                cartItems.RemoveAt(index);
-            }
+                string[] cartItemParts = item.Split('|');
+                if (cartItemParts.Length >= 1)
+                {
+                    if (int.TryParse(cartItemParts[0], out int productId))
+                    {
+                        return productId != id;
+                    }
+                }
+                return false;
+            }).ToList();
 
-            // Update the cart cookies
+            // Clear and update the cart cookies
             foreach (var cookieName in Request.Cookies.AllKeys)
             {
                 if (cookieName.StartsWith("CartItems_"))
@@ -179,18 +212,17 @@ namespace Ecommerce.Controllers
             foreach (var item in cartItems)
             {
                 string[] cartItemParts = item.Split('|');
-                if (cartItemParts.Length >= 2)
+                if (cartItemParts.Length >= 3)
                 {
                     var productID = cartItemParts[0];
-                    var product = db.Products.FirstOrDefault(p => p.id == int.Parse(productID));
-                    if (product != null)
-                    {
-                        string cookieName = "CartItems_" + product.id;
-                        HttpCookie cartCookie = new HttpCookie(cookieName);
-                        cartCookie.Value = product.ProductName + "|" + product.ProductPrice;
-                        cartCookie.Expires = DateTime.Now.AddDays(7);
-                        Response.Cookies.Add(cartCookie);
-                    }
+                    var productName = cartItemParts[1];
+                    var productPrice = cartItemParts[2];
+
+                    string cookieName = "CartItems_" + productID;
+                    HttpCookie cartCookie = new HttpCookie(cookieName);
+                    cartCookie.Value = productID + "|" + productName + "|" + productPrice;
+                    cartCookie.Expires = DateTime.Now.AddDays(7);
+                    Response.Cookies.Add(cartCookie);
                 }
             }
 
@@ -203,9 +235,13 @@ namespace Ecommerce.Controllers
 
 
 
+
         // ClearCart action to clear the cart
-        public ActionResult ClearCart()
+        [Logged]
+        public ActionResult OrderAll()
         {
+            // You can add order processing logic here if needed
+
             // Clear the cart by removing cart item cookies
             foreach (var cookieName in Request.Cookies.AllKeys)
             {
@@ -217,8 +253,11 @@ namespace Ecommerce.Controllers
                 }
             }
 
-            return RedirectToAction("Cart");
+            // You can add order processing logic here if needed
+
+            return View(); // Redirect to an order confirmation view
         }
+
 
 
 

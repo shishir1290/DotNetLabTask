@@ -8,6 +8,6 @@ namespace Ecommerce.Models
     public class ViewModel
     {
         public Ecommerce.EF.Product Product { get; set; }
-        public Ecommerce.EF.Customer Customer { get; set; }
+        public Ecommerce.EF.User Customer { get; set; }
     }
 }

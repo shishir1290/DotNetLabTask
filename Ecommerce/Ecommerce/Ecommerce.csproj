@@ -135,7 +135,7 @@
     <Compile Include="EF\Category.cs">
       <DependentUpon>Products.tt</DependentUpon>
     </Compile>
-    <Compile Include="EF\Customer.cs">
+    <Compile Include="EF\Order.cs">
       <DependentUpon>Products.tt</DependentUpon>
     </Compile>
     <Compile Include="EF\Product.cs">
@@ -156,11 +156,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Products.edmx</DependentUpon>
     </Compile>
+    <Compile Include="EF\User.cs">
+      <DependentUpon>Products.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CustomerLoginModel.cs" />
     <Compile Include="Models\CustomerSignupModel.cs" />
+    <Compile Include="Models\UniqueEmailAttribute.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -183,8 +187,8 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="EF\Products.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Products.Context.cs</LastGenOutput>
       <DependentUpon>Products.edmx</DependentUpon>
+      <LastGenOutput>Products.Context.cs</LastGenOutput>
     </Content>
     <Content Include="EF\Products.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -231,11 +235,12 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Customer\Signup.cshtml" />
     <Content Include="Views\Customer\Login.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\CustomerHome.cshtml" />
     <Content Include="Views\Home\Buy.cshtml" />
     <Content Include="Views\Home\CustomerProfile.cshtml" />
     <Content Include="Views\Home\Order.cshtml" />
     <Content Include="Views\Home\Cart.cshtml" />
+    <Content Include="Views\Home\OrderAll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
