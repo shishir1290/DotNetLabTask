@@ -31,5 +31,7 @@ namespace Ecommerce.EF
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual User Users1 { get; set; }
+        public virtual User User1 { get; set; }
     }
 }

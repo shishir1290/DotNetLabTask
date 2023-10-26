@@ -1,22 +1,20 @@
 ﻿using Ecommerce.EF;
 using Ecommerce.Models;
 using System.Linq;
+using BCrypt.Net;
 using System.Web.Mvc;
-using System.Web.Security;
 
 namespace Ecommerce.Controllers
 {
     public class CustomerController : Controller
     {
-        private ProductEntities1 db = new ProductEntities1();
+        private ProductEntities2 db = new ProductEntities2();
 
         [HttpGet]
         public ActionResult Signup()
         {
             return View();
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -31,6 +29,9 @@ namespace Ecommerce.Controllers
                     return View(user);
                 }*/
 
+                // Hash the password using BCrypt with automatic salt
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
                 var newUser = new User
                 {
                     Name = user.Name,
@@ -38,7 +39,7 @@ namespace Ecommerce.Controllers
                     Phone = user.Phone,
                     Gender = user.Gender,
                     Address = user.Address,
-                    Password = user.Password,
+                    Password = hashedPassword, // Store the hashed password in the database
                     UserType = user.UserType
                 };
 
@@ -50,8 +51,6 @@ namespace Ecommerce.Controllers
 
             return View(user);
         }
-
-
 
         [HttpGet]
         public ActionResult Login()
@@ -65,8 +64,8 @@ namespace Ecommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = db.Users.SingleOrDefault(c => c.Email == loginModel.Email && c.Password == loginModel.Password);
-                if (user != null)
+                var user = db.Users.SingleOrDefault(c => c.Email == loginModel.Email);
+                if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
                 {
                     // Authentication successful
                     Session["CustomerEmail"] = user.Email;
@@ -93,8 +92,5 @@ namespace Ecommerce.Controllers
             }
             return View(loginModel);
         }
-
-
-
     }
 }

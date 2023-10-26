@@ -17,7 +17,7 @@ else
             <tr>
                 <th>Product Name</th>
                 <th>Price</th>
-                <th>Action</th> <!-- New column for the "Delete" button -->
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@ else
                         <td>@cartItemParts[1]</td>
                         <td>@cartItemParts[2]</td>
                         <td>
-                            @Html.ActionLink("Delete", "DeleteCartItem", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
+                            @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
                         </td>
                     </tr>
                 }
@@ -41,4 +41,4 @@ else
     @Html.ActionLink("Order All", "OrderAll", "Home", null, new { @class = "btn btn-primary" })
 }
 
-@Html.ActionLink("Continue Shopping", "Index", "Home")
+@Html.ActionLink("Continue Shopping", "CustomerHome", "Home") <!-- Assuming CustomerHome is the action to continue shopping -->

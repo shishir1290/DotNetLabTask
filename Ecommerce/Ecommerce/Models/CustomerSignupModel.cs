@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Ecommerce.Models
 {
@@ -16,9 +12,10 @@ namespace Ecommerce.Models
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
-        [UniqueEmail(ErrorMessage = "Email already in use. Please use a different email.")]
         [RegularExpression(@"^[a-zA-Z0-9]+@gmail.com$", ErrorMessage = "Email must follow the format '@gmail.com' where x is a number.")]
+        [UniqueEmail(ErrorMessage = "Email already in use. Please use a different email.")]
         public string Email { get; set; }
+
 
         [Required(ErrorMessage = "Phone number is required.")]
         public int Phone { get; set; }

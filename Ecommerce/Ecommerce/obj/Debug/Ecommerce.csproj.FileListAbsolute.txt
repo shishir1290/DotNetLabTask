@@ -81,3 +81,15 @@ C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\obj\Debug\Ecommerce.csproj
 C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\obj\Debug\Ecommerce.csproj.CopyComplete
 C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\obj\Debug\Ecommerce.dll
 C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\obj\Debug\Ecommerce.pdb
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\BCrypt.Net.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\BouncyCastle.Crypto.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Buffers.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Memory.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Numerics.Vectors.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\BCrypt.Net.xml
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\BouncyCastle.Crypto.xml
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Buffers.xml
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Memory.xml
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Numerics.Vectors.xml
+C:\Users\shishir1290\Desktop\.NET\Ecommerce\Ecommerce\bin\System.Runtime.CompilerServices.Unsafe.xml

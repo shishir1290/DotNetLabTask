@@ -1,6 +1,7 @@
 ﻿using Ecommerce.Auth;
 using Ecommerce.EF;
 using Ecommerce.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Ecommerce.Controllers
 {
     public class HomeController : Controller
     {
-        private ProductEntities1 db = new ProductEntities1();
+        private ProductEntities2 db = new ProductEntities2();
         // GET: Home
         [Logged]
         public ActionResult CustomerHome()
@@ -36,7 +37,7 @@ namespace Ecommerce.Controllers
         }
 
         [Logged]
-        public ActionResult CustomerProfile()
+        public ActionResult UserProfile()
         {
             // Get the customer's email from the session
             string customerEmail = Session["CustomerEmail"] as string;
@@ -63,7 +64,7 @@ namespace Ecommerce.Controllers
 
 
         [Logged]
-        public ActionResult Order(int id)
+        public ActionResult Order(int productId)
         {
             // Check if the user is logged in
             string customerEmail = Session["CustomerEmail"] as string;
@@ -81,24 +82,83 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("CustomerHome", "Home"); // Redirect to a default page
             }
 
-            // Retrieve the order
-            var order = db.Products.FirstOrDefault(p => p.id == id);
-            if (order == null)
+            // Retrieve the product based on the provided productId
+            var product = db.Products.FirstOrDefault(p => p.id == productId);
+            if (product == null)
             {
-                // Order not found, handle appropriately (e.g., show an error message)
+                // Product not found, handle appropriately (e.g., show an error message)
                 return RedirectToAction("CustomerHome"); // Redirect to some other page
             }
+
+            // Create a new order and set the customer and product IDs
+            var newOrder = new Order
+            {
+                CustomerId = customerProfile.id,
+                ProductId = product.id
+            };
+
+            // Save the order to the database
+            db.Orders.Add(newOrder);
+            db.SaveChanges();
 
             // Create an instance of the view model and populate it
             var viewModel = new ViewModel
             {
-                Product = order,
+                Product = product,
                 Customer = customerProfile
             };
 
             return View(viewModel);
         }
 
+
+
+        [Logged]
+        public ActionResult AddToCart(int id)
+        {
+            using (var db = new ProductEntities2())
+            {
+                var product = db.Products.FirstOrDefault(p => p.id == id);
+
+                if (product != null)
+                {
+                    string cookieName = "CartItems_" + product.id; // Use a unique name for each product
+                    HttpCookie cartCookie = Request.Cookies[cookieName] ?? new HttpCookie(cookieName);
+
+                    // Get the current cart items from the cookie
+                    string cartItems = cartCookie.Value;
+
+                    // Check if cartItems is not null and not empty before splitting
+                    if (!string.IsNullOrEmpty(cartItems))
+                    {
+                        // Split the cart items into an array, avoiding null values
+                        string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        // Check if the product is already in the cart
+                        if (!cartItemsArray.Any(item => item.Contains($"{product.id}|")))
+                        {
+                            // Add the product to the cart items in the format "productId|productName|productPrice"
+                            cartItems += $"{product.id}|{product.ProductName}|{product.ProductPrice},";
+
+                            // Update the cart cookie
+                            cartCookie.Value = cartItems;
+                            cartCookie.Expires = DateTime.Now.AddDays(7);
+                            Response.Cookies.Add(cartCookie);
+                        }
+                    }
+                    else
+                    {
+                        // If cartItems is empty, just add the current product
+                        cartItems = $"{product.id}|{product.ProductName}|{product.ProductPrice},";
+                        cartCookie.Value = cartItems;
+                        cartCookie.Expires = DateTime.Now.AddDays(7);
+                        Response.Cookies.Add(cartCookie);
+                    }
+                }
+            }
+
+            return RedirectToAction("CustomerHome");
+        }
 
         [Logged]
         public ActionResult Cart()
@@ -118,53 +178,6 @@ namespace Ecommerce.Controllers
 
             return View(cartItems);
         }
-
-        [Logged]
-        public ActionResult AddToCart(int id)
-        {
-            var product = db.Products.FirstOrDefault(p => p.id == id);
-
-            if (product != null)
-            {
-                // Create a cookie for the cart or retrieve an existing one
-                string cookieName = "CartItems_" + id;
-                HttpCookie cartCookie = Request.Cookies[cookieName] ?? new HttpCookie(cookieName);
-
-                // Split the existing cart items into an array
-                string[] cartItems = cartCookie.Value.Split(',');
-
-                // Check if the product is already in the cart
-                bool productInCart = false;
-
-                for (int i = 0; i < cartItems.Length; i++)
-                {
-                    string[] cartItemParts = cartItems[i].Split('|');
-                    if (cartItemParts.Length >= 2)
-                    {
-                        var existingProductId = cartItemParts[0];
-                        if (int.TryParse(existingProductId, out int existingId) && existingId == id)
-                        {
-                            // The product is already in the cart; you can choose to update its quantity or handle as needed
-                            productInCart = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!productInCart)
-                {
-                    // Add the item to the cart
-                    cartItems = cartItems.Concat(new[] { $"{product.id}|{product.ProductName}|{product.ProductPrice}" }).ToArray();
-                    cartCookie.Value = string.Join(",", cartItems);
-                    cartCookie.Expires = DateTime.Now.AddDays(7);
-                    Response.Cookies.Add(cartCookie);
-                }
-            }
-
-            return RedirectToAction("CustomerHome");
-        }
-
-
 
 
         [Logged]
@@ -233,30 +246,82 @@ namespace Ecommerce.Controllers
 
 
 
-
-
-
-        // ClearCart action to clear the cart
         [Logged]
         public ActionResult OrderAll()
         {
-            // You can add order processing logic here if needed
-
-            // Clear the cart by removing cart item cookies
-            foreach (var cookieName in Request.Cookies.AllKeys)
+            // Check if the user is logged in
+            string customerEmail = Session["CustomerEmail"] as string;
+            if (string.IsNullOrEmpty(customerEmail))
             {
-                if (cookieName.StartsWith("CartItems_"))
-                {
-                    HttpCookie cartCookie = Request.Cookies[cookieName];
-                    cartCookie.Expires = DateTime.Now.AddDays(-1);
-                    Response.Cookies.Add(cartCookie);
-                }
+                // User is not logged in, redirect to the login page
+                return RedirectToAction("Login", "Customer");
             }
 
-            // You can add order processing logic here if needed
+            using (var db = new ProductEntities2())
+            {
+                // Retrieve the customer's profile
+                var customerProfile = db.Users.FirstOrDefault(cp => cp.Email == customerEmail);
+                if (customerProfile == null)
+                {
+                    // Customer profile not found, handle appropriately
+                    return RedirectToAction("CustomerHome", "Home"); // Redirect to a default page
+                }
 
-            return View(); // Redirect to an order confirmation view
+                List<string> cartItems = new List<string>();
+
+                // Retrieve the cart items from cookies
+                foreach (var cookieName in Request.Cookies.AllKeys)
+                {
+                    if (cookieName.StartsWith("CartItems_"))
+                    {
+                        HttpCookie cookie = Request.Cookies[cookieName];
+                        string items = cookie.Value;
+                        cartItems.AddRange(items.Split(','));
+                    }
+                }
+
+                // Insert orders into the database
+                foreach (var item in cartItems)
+                {
+                    string[] cartItemParts = item.Split('|');
+                    if (cartItemParts.Length >= 1)
+                    {
+                        if (int.TryParse(cartItemParts[0], out int productId))
+                        {
+                            // Create a new order and set the customer and product IDs
+                            var newOrder = new Order
+                            {
+                                CustomerId = customerProfile.id,
+                                ProductId = productId
+                            };
+
+                            // Save the order to the database
+                            db.Orders.Add(newOrder);
+                        }
+                    }
+                }
+
+                // Clear the cart by removing cart item cookies
+                foreach (var cookieName in Request.Cookies.AllKeys)
+                {
+                    if (cookieName.StartsWith("CartItems_"))
+                    {
+                        HttpCookie cartCookie = Request.Cookies[cookieName];
+                        cartCookie.Expires = DateTime.Now.AddDays(-1);
+                        Response.Cookies.Add(cartCookie);
+                    }
+
+                    // Save changes to the database
+                    db.SaveChanges();
+                }
+
+                // You can add order processing logic here if needed
+
+                return View(); // Redirect to an order confirmation view
+            }
         }
+
+
 
 
 
