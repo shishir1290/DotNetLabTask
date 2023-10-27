@@ -77,7 +77,7 @@ namespace Ecommerce.Controllers
                     }
                     else if (user.UserType == "Admin")
                     {
-                        return RedirectToAction("AdminHome", "Home"); // Redirect to the admin home page
+                        return RedirectToAction("AdminHome", "Admin"); // Redirect to the admin home page
                     }
                     else
                     {

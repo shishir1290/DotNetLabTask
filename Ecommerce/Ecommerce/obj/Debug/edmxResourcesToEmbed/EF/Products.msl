@@ -12,6 +12,7 @@
     <EntitySetMapping Name="Orders">
       <EntityTypeMapping TypeName="ProductModel.Order">
         <MappingFragment StoreEntitySet="Orders">
+          <ScalarProperty Name="Status" ColumnName="Status" />
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
           <ScalarProperty Name="ProductId" ColumnName="ProductId" />

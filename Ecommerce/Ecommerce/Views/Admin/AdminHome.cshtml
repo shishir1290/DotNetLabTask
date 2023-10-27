@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Ecommerce.EF.Order> 
+
+@{
+    ViewBag.Title = "AdminHome";
+}
+
+<h2>AdminHome</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CustomerId) 
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProductId)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var order in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => order.CustomerId)
+            </td>
+            <td>
+                @Html.DisplayFor(model => order.ProductId)
+            </td>
+
+            <td>
+                @Html.DisplayFor(model => order.Status)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = order.id }) |
+                @Html.ActionLink("Details", "Details", new { id = order.id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = order.id })
+            </td>
+        </tr>
+    }
+</table>

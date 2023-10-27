@@ -17,6 +17,7 @@
     <Property Name="ProductId" Type="Int32" Nullable="false" />
     <NavigationProperty Name="Product" Relationship="Self.FK_Orders_Products" FromRole="Orders" ToRole="Products" />
     <NavigationProperty Name="User" Relationship="ProductModel.FK_Orders_Users" FromRole="Order" ToRole="User" />
+    <Property Name="Status" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityType Name="Product">
     <Key>

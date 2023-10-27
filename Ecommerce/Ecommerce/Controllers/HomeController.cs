@@ -292,7 +292,8 @@ namespace Ecommerce.Controllers
                             var newOrder = new Order
                             {
                                 CustomerId = customerProfile.id,
-                                ProductId = productId
+                                ProductId = productId,
+                                Status = "Processing"
                             };
 
                             // Save the order to the database
