@@ -1,11 +1,13 @@
 # DotNetLabTask
 
-```markdown
+
 # Ecommerce - ASP.NET Framework 4.5 MVC 5
 
 ![Ecommerce Logo](/path/to/logo.png)
 
 Ecommerce is an ASP.NET Framework 4.5 MVC 5 project for building a feature-rich e-commerce website. This repository contains the source code and related resources for the project.
+
+```markdown
 
 ## Table of Contents
 - [Features](#features)
@@ -72,9 +74,3 @@ We welcome contributions from the community. If you'd like to contribute to this
 
 This project is licensed under the [MIT License](LICENSE.md).
 
----
-
-Feel free to customize this README file to suit your project's specific needs. Don't forget to include any relevant badges, links, and additional documentation as necessary.
-```
-
-In this template, replace placeholders like `your-username`, `Feature 1`, and `Description of the first feature` with your GitHub username and the actual features of your project. You can also include images, badges, or additional sections to better describe your project.
