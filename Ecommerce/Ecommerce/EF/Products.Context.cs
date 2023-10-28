@@ -13,10 +13,10 @@ namespace Ecommerce.EF
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class ProductEntities2 : DbContext
+    public partial class ProductEntities3 : DbContext
     {
-        public ProductEntities2()
-            : base("name=ProductEntities2")
+        public ProductEntities3()
+            : base("name=ProductEntities3")
         {
         }
     
@@ -29,7 +29,5 @@ namespace Ecommerce.EF
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<User> Users { get; set; }
-
-        public System.Data.Entity.DbSet<Ecommerce.Models.OrderModel> OrderModels { get; set; }
     }
 }

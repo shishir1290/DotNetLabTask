@@ -219,6 +219,9 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Pictures\Product Image\Drinko.png" />
+    <Content Include="Pictures\Product Image\Metador.jpg" />
+    <Content Include="Pictures\Product Image\Watch.jpg" />
     <Content Include="Pictures\Signup.png" />
     <Content Include="Pictures\Login.png" />
     <Content Include="Pictures\vartical_line.png" />
@@ -260,7 +263,7 @@
     <Content Include="Views\Customer\Signup.cshtml" />
     <Content Include="Views\Customer\Login.cshtml" />
     <Content Include="Views\Home\CustomerHome.cshtml" />
-    <Content Include="Views\Home\Buy.cshtml" />
+    <Content Include="Views\Home\Details.cshtml" />
     <Content Include="Views\Home\UserProfile.cshtml" />
     <Content Include="Views\Home\Order.cshtml" />
     <Content Include="Views\Home\Cart.cshtml" />

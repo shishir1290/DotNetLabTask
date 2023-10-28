@@ -11,7 +11,7 @@ namespace Ecommerce.Controllers
     public class AdminController : Controller
     {
 
-        private ProductEntities2 db = new ProductEntities2();
+        private ProductEntities3 db = new ProductEntities3();
         // GET: Admin
         [Logged]
         public ActionResult AdminHome()

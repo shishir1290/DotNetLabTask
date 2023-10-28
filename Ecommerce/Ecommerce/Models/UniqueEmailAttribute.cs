@@ -7,7 +7,7 @@ public class UniqueEmailAttribute : ValidationAttribute
 {
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        var db = new ProductEntities2(); // You might want to consider a more efficient way to access your database context.
+        var db = new ProductEntities3(); // You might want to consider a more efficient way to access your database context.
 
         if (value != null)
         {

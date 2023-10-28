@@ -13,7 +13,7 @@ namespace Ecommerce.Controllers
 {
     public class HomeController : Controller
     {
-        private ProductEntities2 db = new ProductEntities2();
+        private ProductEntities3 db = new ProductEntities3();
         // GET: Home
         [Logged]
         public ActionResult CustomerHome()
@@ -23,7 +23,7 @@ namespace Ecommerce.Controllers
         }
 
         [Logged]
-        public ActionResult Buy(int id)
+        public ActionResult Details(int id)
         {
             var product = db.Products.FirstOrDefault(p => p.id == id);
 
@@ -63,60 +63,11 @@ namespace Ecommerce.Controllers
         }
 
 
-        [Logged]
-        public ActionResult Order(int productId)
-        {
-            // Check if the user is logged in
-            string customerEmail = Session["CustomerEmail"] as string;
-            if (string.IsNullOrEmpty(customerEmail))
-            {
-                // User is not logged in, redirect to the login page
-                return RedirectToAction("Login", "Customer");
-            }
-
-            // Retrieve the customer's profile
-            var customerProfile = db.Users.FirstOrDefault(cp => cp.Email == customerEmail);
-            if (customerProfile == null)
-            {
-                // Customer profile not found, handle appropriately
-                return RedirectToAction("CustomerHome", "Home"); // Redirect to a default page
-            }
-
-            // Retrieve the product based on the provided productId
-            var product = db.Products.FirstOrDefault(p => p.id == productId);
-            if (product == null)
-            {
-                // Product not found, handle appropriately (e.g., show an error message)
-                return RedirectToAction("CustomerHome"); // Redirect to some other page
-            }
-
-            // Create a new order and set the customer and product IDs
-            var newOrder = new Order
-            {
-                CustomerId = customerProfile.id,
-                ProductId = product.id
-            };
-
-            // Save the order to the database
-            db.Orders.Add(newOrder);
-            db.SaveChanges();
-
-            // Create an instance of the view model and populate it
-            var viewModel = new ViewModel
-            {
-                Product = product,
-                Customer = customerProfile
-            };
-
-            return View(viewModel);
-        }
-
-
 
         [Logged]
         public ActionResult AddToCart(int id)
         {
-            using (var db = new ProductEntities2())
+            using (var db = new ProductEntities3())
             {
                 var product = db.Products.FirstOrDefault(p => p.id == id);
 
@@ -257,7 +208,7 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("Login", "Customer");
             }
 
-            using (var db = new ProductEntities2())
+            using (var db = new ProductEntities3())
             {
                 // Retrieve the customer's profile
                 var customerProfile = db.Users.FirstOrDefault(cp => cp.Email == customerEmail);
@@ -321,11 +272,6 @@ namespace Ecommerce.Controllers
                 return View(); // Redirect to an order confirmation view
             }
         }
-
-
-
-
-
 
 
 

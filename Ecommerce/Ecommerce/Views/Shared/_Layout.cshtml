@@ -6,7 +6,7 @@
 
     if (customerEmail != null)
     {
-        using (var db = new ProductEntities2()) // Instantiate the database context
+        using (var db = new ProductEntities3()) // Instantiate the database context
         {
             var user = db.Users.SingleOrDefault(u => u.Email == customerEmail);
 
