@@ -38,7 +38,7 @@ Before you begin, ensure you have met the following requirements:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone [https://github.com/shishir1290/DotNetLabTask.git]
+   git clone https://github.com/shishir1290/DotNetLabTask.git
    ```
 
 2. Open the project in Visual Studio.
