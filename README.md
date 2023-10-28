@@ -3,7 +3,7 @@
 
 # Ecommerce - ASP.NET Framework 4.5 MVC 5
 
-![Ecommerce Logo]([/path/to/logo.png](https://neosmart.net/blog/wp-content/uploads/2019/06/dot-net-framework.png))
+![Ecommerce Logo]([https://neosmart.net/blog/wp-content/uploads/2019/06/dot-net-framework.png])
 
 Ecommerce is an ASP.NET Framework 4.5 MVC 5 project for building a feature-rich e-commerce website. This repository contains the source code and related resources for the project.
 
