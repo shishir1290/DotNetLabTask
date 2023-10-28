@@ -1,4 +1,5 @@
 ﻿@model List<string>
+@using Ecommerce.EF;
 
 @{
     ViewBag.Title = "Cart";
@@ -25,32 +26,49 @@ else
             @foreach (var item in Model)
             {
                 string[] cartItemParts = item.Split('|');
-                if (cartItemParts.Length >= 3) // Ensure you have product ID, name, and price
+                if (cartItemParts.Length >= 1)
                 {
-                    <tr>
-                        <td width="15%">
-                            @if (cartItemParts.Length >= 4 && !string.IsNullOrEmpty(cartItemParts[3]))
-                            {
-                                <img src="data:image/jpeg;base64,@cartItemParts[3]" width="70%" height="70%" />
-                            }
-                            else
-                            {
-                                <p>No image available</p>
-                            }
+                    if (int.TryParse(cartItemParts[0], out int productId))
+                    {
+                        var db = new ProductEntities3();
+                        var product = db.Products.FirstOrDefault(p => p.id == productId);
 
-                        </td>
-                        <td>@cartItemParts[1]</td>
-                        <td>@cartItemParts[2]</td>
-                        <td>
-                            @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
-                        </td>
-                    </tr>
+                        if (product != null && cartItemParts.Length >= 3) // Ensure you have a valid product and all required cart item parts
+                        {
+                            <tr>
+                                <td width="30%">
+                                    @if (product.ProductImage != null && product.ProductImage.Length > 0)
+                                    {
+                                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.ProductImage)" width="50%" height="50%" />
+                                    }
+                                    else
+                                    {
+                                        <p>No image available</p>
+                                    }
+                                </td>
+                                <td>@product.ProductName</td>
+                                <td>@cartItemParts[2]</td>
+                                <td>
+                                    @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <p>Invalid product or cart item format</p>
+                        }
+                    }
+                    else
+                    {
+                        <p>Invalid product ID format: @cartItemParts[0]</p>
+                    }
                 }
                 else
                 {
                     <p>Invalid cart item format</p>
                 }
             }
+
         </tbody>
     </table>
 
