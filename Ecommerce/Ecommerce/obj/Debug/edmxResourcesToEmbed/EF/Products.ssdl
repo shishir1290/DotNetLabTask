@@ -21,10 +21,11 @@
       <PropertyRef Name="id" />
     </Key>
     <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="ProductName" Type="varchar" MaxLength="100" Nullable="false" />
-    <Property Name="ProductDetails" Type="varchar" MaxLength="1000" Nullable="false" />
-    <Property Name="ProductPrice" Type="int" Nullable="false" />
+    <Property Name="ProductName" Type="nvarchar" MaxLength="255" Nullable="false" />
+    <Property Name="ProductDetails" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ProductPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
     <Property Name="category" Type="int" Nullable="false" />
+    <Property Name="ProductImage" Type="varbinary(max)" />
   </EntityType>
   <EntityType Name="Users">
     <Key>

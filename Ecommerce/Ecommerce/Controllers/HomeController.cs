@@ -88,8 +88,12 @@ namespace Ecommerce.Controllers
                         // Check if the product is already in the cart
                         if (!cartItemsArray.Any(item => item.Contains($"{product.id}|")))
                         {
+
+                            var ProductImage = product.ProductImage != null ? Convert.ToBase64String(product.ProductImage) : null;
+
+                            /*var ProductImage = Convert.ToBase64String(product.ProductImage);*/
                             // Add the product to the cart items in the format "productId|productName|productPrice"
-                            cartItems += $"{product.id}|{product.ProductName}|{product.ProductPrice},";
+                            cartItems += $"{product.id}|{product.ProductName}|{product.ProductPrice}|{ProductImage},";
 
                             // Update the cart cookie
                             cartCookie.Value = cartItems;
@@ -114,21 +118,24 @@ namespace Ecommerce.Controllers
         [Logged]
         public ActionResult Cart()
         {
-            List<string> cartItems = new List<string>();
+            // Get all cookies with names starting with "CartItems_"
+            var cartCookies = Request.Cookies.AllKeys
+                .Where(key => key.StartsWith("CartItems_"))
+                .Select(key => Request.Cookies[key])
+                .ToList();
 
-            // Retrieve the cart items from cookies
-            foreach (var cookieName in Request.Cookies.AllKeys)
+            List<string> cartItemsList = new List<string>();
+
+            // Retrieve cart items from all matching cookies
+            foreach (var cartCookie in cartCookies)
             {
-                if (cookieName.StartsWith("CartItems_"))
-                {
-                    HttpCookie cookie = Request.Cookies[cookieName];
-                    string items = cookie.Value;
-                    cartItems.AddRange(items.Split(','));
-                }
+                string cartItems = cartCookie.Value;
+                cartItemsList.AddRange(cartItems.Split(','));
             }
 
-            return View(cartItems);
+            return View(cartItemsList);
         }
+
 
 
         [Logged]

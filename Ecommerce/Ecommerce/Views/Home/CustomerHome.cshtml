@@ -12,6 +12,9 @@
             @Html.DisplayNameFor(model => model.id)
         </th>
         <th>
+            @Html.DisplayNameFor(model => model.ProductImage)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.ProductName)
         </th>
         <th>
@@ -26,28 +29,39 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ProductName)
-        </td>
-        <td width="30%">
-            @Html.DisplayFor(modelItem => item.ProductDetails)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ProductPrice)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category1.CategoryName)
-        </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-success" }) |
-            @Html.ActionLink("Add to Cart", "AddToCart", new { id = item.id }, new { @class = "btn btn-success" })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td width="15%">
+                @if (item.ProductImage != null && item.ProductImage.Length > 0)
+                {
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ProductImage)" width="70%" height="70%"/>
+                }
+                else
+                {
+                    <p>No image available</p>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td width="30%">
+                @Html.DisplayFor(modelItem => item.ProductDetails)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category1.CategoryName)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-success" }) |
+                @Html.ActionLink("Add to Cart", "AddToCart", new { id = item.id }, new { @class = "btn btn-success" })
+            </td>
+        </tr>
+    }
 
 </table>

@@ -15,6 +15,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Image</th>
                 <th>Product Name</th>
                 <th>Price</th>
                 <th>Action</th>
@@ -27,12 +28,27 @@ else
                 if (cartItemParts.Length >= 3) // Ensure you have product ID, name, and price
                 {
                     <tr>
+                        <td width="15%">
+                            @if (cartItemParts.Length >= 4 && !string.IsNullOrEmpty(cartItemParts[3]))
+                            {
+                                <img src="data:image/jpeg;base64,@cartItemParts[3]" width="70%" height="70%" />
+                            }
+                            else
+                            {
+                                <p>No image available</p>
+                            }
+
+                        </td>
                         <td>@cartItemParts[1]</td>
                         <td>@cartItemParts[2]</td>
                         <td>
                             @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
                         </td>
                     </tr>
+                }
+                else
+                {
+                    <p>Invalid cart item format</p>
                 }
             }
         </tbody>
@@ -41,4 +57,4 @@ else
     @Html.ActionLink("Order All", "OrderAll", "Home", null, new { @class = "btn btn-primary" })
 }
 
-@Html.ActionLink("Continue Shopping", "CustomerHome", "Home") <!-- Assuming CustomerHome is the action to continue shopping -->
+@Html.ActionLink("Continue Shopping", "CustomerHome", "Home")

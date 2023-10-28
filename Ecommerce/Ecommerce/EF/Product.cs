@@ -25,6 +25,7 @@ namespace Ecommerce.EF
         public string ProductDetails { get; set; }
         public int ProductPrice { get; set; }
         public int category { get; set; }
+        public byte[] ProductImage { get; set; }
     
         public virtual Category Category1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
