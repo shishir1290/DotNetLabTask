@@ -1,18 +1,16 @@
-﻿@model IEnumerable<Ecommerce.EF.Order> 
+﻿@model IEnumerable<Ecommerce.EF.Order>
 
 @{
     ViewBag.Title = "AdminHome";
+    var errorMessage = TempData["ErrorMessage"] as string;
 }
 
 <h2>AdminHome</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.CustomerId) 
+            @Html.DisplayNameFor(model => model.CustomerId)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ProductId)
@@ -37,9 +35,16 @@
                 @Html.DisplayFor(model => order.Status)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = order.id }) |
-                @Html.ActionLink("Details", "Details", new { id = order.id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = order.id })
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @errorMessage
+                    </div>
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Approve", "UpdateOrderStatus", new { id = order.id }, new { @class = "btn btn-success" })
+
             </td>
         </tr>
     }

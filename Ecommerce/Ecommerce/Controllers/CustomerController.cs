@@ -68,7 +68,7 @@ namespace Ecommerce.Controllers
                 if (user != null && BCrypt.Net.BCrypt.Verify(loginModel.Password, user.Password))
                 {
                     // Authentication successful
-                    Session["CustomerEmail"] = user.Email;
+                    Session["UserEmail"] = user.Email;
 
                     // Check the user type and redirect accordingly
                     if (user.UserType == "Customer")

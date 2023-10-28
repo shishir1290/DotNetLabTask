@@ -10,7 +10,7 @@ namespace Ecommerce.Auth
     {
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            return httpContext.Session["CustomerEmail"] != null;
+            return httpContext.Session["UserEmail"] != null;
         }
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

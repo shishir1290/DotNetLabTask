@@ -208,7 +208,7 @@ namespace Ecommerce.Controllers
         public ActionResult OrderAll()
         {
             // Check if the user is logged in
-            string customerEmail = Session["CustomerEmail"] as string;
+            string customerEmail = Session["UserEmail"] as string;
             if (string.IsNullOrEmpty(customerEmail))
             {
                 // User is not logged in, redirect to the login page
@@ -280,6 +280,13 @@ namespace Ecommerce.Controllers
             }
         }
 
+
+        [Logged]
+        public ActionResult ShowAllOrder()
+        {
+            var OrderList = db.Orders.ToList();
+            return View(OrderList);
+        }
 
 
         public ActionResult Logout()
