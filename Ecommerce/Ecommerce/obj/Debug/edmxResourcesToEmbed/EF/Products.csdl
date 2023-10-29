@@ -18,6 +18,7 @@
     <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
     <NavigationProperty Name="Product" Relationship="Self.FK_Orders_Products" FromRole="Orders" ToRole="Products" />
     <NavigationProperty Name="User" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
+    <Property Name="Quantity" Type="Int32" />
   </EntityType>
   <EntityType Name="Product">
     <Key>
@@ -30,7 +31,8 @@
     <Property Name="category" Type="Int32" Nullable="false" />
     <NavigationProperty Name="Category1" Relationship="Self.FK_Product_Category" FromRole="Products" ToRole="Categorys" />
     <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Products" FromRole="Products" ToRole="Orders" />
-    <Property Name="ProductImage" Type="Binary" MaxLength="Max" FixedLength="false" />
+    <Property Name="ProductImage" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+    <Property Name="Quantity" Type="Int32" Nullable="false" />
   </EntityType>
   <EntityType Name="User">
     <Key>

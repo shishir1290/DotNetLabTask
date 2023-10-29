@@ -49,33 +49,25 @@ namespace Ecommerce.Controllers
 
 
         [Logged]
-        public ActionResult UpdateOrderStatus(int id)
+        public ActionResult UpdateOrderStatus(int id, string value)
         {
             using (var db = new ProductEntities3())
             {
-                // Retrieve the order by its ID
                 var orderToUpdate = db.Orders.FirstOrDefault(o => o.id == id);
 
                 if (orderToUpdate == null)
                 {
-                    // Order not found, handle appropriately (e.g., return an error view)
                     TempData["ErrorMessage"] = "Order not found.";
                     return RedirectToAction("AdminHome");
                 }
 
-                // Check if the order's status is "Processing"
-                if (orderToUpdate.Status == "Processing")
+                if (value == "Approved")
                 {
-                    // Update the order status to "Approved"
-                    orderToUpdate.Status = "Approved";
-
-                    // Save changes to the database
-                    db.SaveChanges();
+                    HandleApprovedOrder(db, orderToUpdate);
                 }
-                else if (orderToUpdate.Status == "Approved")
+                else if (value == "Refused")
                 {
-                    // Order is already approved, set an error message
-                    TempData["ErrorMessage"] = "This order is already approved.";
+                    HandleRefusedOrder(db, orderToUpdate);
                 }
 
                 // You can add additional logic here if needed
@@ -83,6 +75,51 @@ namespace Ecommerce.Controllers
                 return RedirectToAction("AdminHome");
             }
         }
+
+        private void HandleApprovedOrder(ProductEntities3 db, Order orderToUpdate)
+        {
+            if (orderToUpdate.Status == "Refused" || orderToUpdate.Status == "Approved")
+            {
+                TempData["ApprovedErrorMessage"] = "This order is already " + orderToUpdate.Status + ".";
+            }
+            else if (orderToUpdate.Status == "Processing")
+            {
+                var product = db.Products.FirstOrDefault(p => p.id == orderToUpdate.ProductId);
+
+                if (product != null)
+                {
+                    if (product.Quantity >= orderToUpdate.Quantity)
+                    {
+                        product.Quantity -= (int)orderToUpdate.Quantity;
+                        orderToUpdate.Status = "Approved";
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Insufficient product quantity.";
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Product not found.";
+                }
+            }
+        }
+
+        private void HandleRefusedOrder(ProductEntities3 db, Order orderToUpdate)
+        {
+            if (orderToUpdate.Status == "Approved" || orderToUpdate.Status == "Refused")
+            {
+                TempData["RefusedErrorMessage"] = "This order is already " + orderToUpdate.Status + ".";
+            }
+            else if (orderToUpdate.Status == "Processing")
+            {
+                orderToUpdate.Status = "Refused";
+                db.SaveChanges();
+            }
+        }
+
+
 
 
 

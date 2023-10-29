@@ -1,5 +1,6 @@
 ﻿@model List<string>
 @using Ecommerce.EF;
+@using Ecommerce.Models
 
 @{
     ViewBag.Title = "Cart";
@@ -13,27 +14,30 @@
 }
 else
 {
+    <p>Total Quantity in Cart: @ViewBag.TotalQuantity</p>
+
     <table class="table">
         <thead>
             <tr>
                 <th>Image</th>
                 <th>Product Name</th>
                 <th>Price</th>
+                <th>Quantity</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @for (int i = 0; i < Model.Count; i++)
             {
-                string[] cartItemParts = item.Split('|');
-                if (cartItemParts.Length >= 1)
+                string[] cartItemParts = Model[i].Split('|');
+                if (cartItemParts.Length >= 4)
                 {
-                    if (int.TryParse(cartItemParts[0], out int productId))
+                    if (int.TryParse(cartItemParts[0], out int productId) && int.TryParse(cartItemParts[3], out int quantity))
                     {
                         var db = new ProductEntities3();
                         var product = db.Products.FirstOrDefault(p => p.id == productId);
 
-                        if (product != null && cartItemParts.Length >= 3) // Ensure you have a valid product and all required cart item parts
+                        if (product != null)
                         {
                             <tr>
                                 <td width="30%">
@@ -48,8 +52,19 @@ else
                                 </td>
                                 <td>@product.ProductName</td>
                                 <td>@cartItemParts[2]</td>
+                                <td width="10%">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-primary" onclick="decrementQuantity(@(i), @(productId))">-</button>
+                                        </div>
+                                        <input type="text" class="form-control" value="@quantity" id="quantity@(i)" />
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary" onclick="incrementQuantity(@(i), @(productId))">+</button>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>
-                                    @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = cartItemParts[0] }, new { @class = "btn btn-danger" })
+                                    @Html.ActionLink("Delete", "DeleteCartItem", "Home", new { id = productId }, new { @class = "btn btn-danger" })
                                 </td>
                             </tr>
                         }
@@ -68,11 +83,51 @@ else
                     <p>Invalid cart item format</p>
                 }
             }
-
         </tbody>
     </table>
 
-    @Html.ActionLink("Order All", "OrderAll", "Home", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Go to Cheeckout", "OrderAll", "Home", null, new { @class = "btn btn-primary" })
 }
 
 @Html.ActionLink("Continue Shopping", "CustomerHome", "Home")
+
+<script>
+    function incrementQuantity(index, productId) {
+        var quantityInput = $("#quantity" + index);
+        var currentQuantity = parseInt(quantityInput.val());
+        if (!isNaN(currentQuantity)) {
+            var newQuantity = currentQuantity + 1;
+            quantityInput.val(newQuantity);
+            updateCart(productId, newQuantity);
+        }
+    }
+
+    function decrementQuantity(index, productId) {
+        var quantityInput = $("#quantity" + index);
+        var currentQuantity = parseInt(quantityInput.val());
+        if (currentQuantity > 1) {
+            var newQuantity = currentQuantity - 1;
+            quantityInput.val(newQuantity);
+            updateCart(productId, newQuantity);
+        } else {
+            // Quantity is 0 or less, remove the item from the cart and cookies
+            removeFromCart(productId);
+        }
+    }
+
+    function updateCart(productId, quantity) {
+        // Make an AJAX request to update the item's quantity in the cart
+        $.post('/Home/UpdateCartItem', { productId: productId, quantity: quantity }, function (data) {
+            // Handle the response here if needed
+        });
+    }
+
+    function removeFromCart(productId) {
+        // Make an AJAX request to remove the item from the cart (and cookies if necessary)
+        $.post('/Home/RemoveCartItem', { productId: productId }, function (data) {
+            // Handle the response here, e.g., update the total quantity or any other logic
+            // Reload the cart page to reflect the changes
+            location.reload();
+        });
+    }
+</script>

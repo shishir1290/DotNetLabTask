@@ -62,8 +62,6 @@ namespace Ecommerce.Controllers
             return View(profile);
         }
 
-
-
         [Logged]
         public ActionResult AddToCart(int id)
         {
@@ -73,132 +71,202 @@ namespace Ecommerce.Controllers
 
                 if (product != null)
                 {
-                    string cookieName = "CartItems_" + product.id; // Use a unique name for each product
-                    HttpCookie cartCookie = Request.Cookies[cookieName] ?? new HttpCookie(cookieName);
+                    string cookieName = "CartItems";
+                    HttpCookie cartCookie = Request.Cookies[cookieName];
 
-                    // Get the current cart items from the cookie
+                    if (cartCookie == null)
+                    {
+                        cartCookie = new HttpCookie(cookieName);
+                        cartCookie.Value = "";  // Initialize the Value property
+                    }
+
                     string cartItems = cartCookie.Value;
+                    string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    bool productExistsInCart = false;
 
-                    // Check if cartItems is not null and not empty before splitting
-                    if (!string.IsNullOrEmpty(cartItems))
+                    /*for (int i = 0; i < cartItemsArray.Length; i++)
                     {
-                        // Split the cart items into an array, avoiding null values
-                        string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                        // Check if the product is already in the cart
-                        if (!cartItemsArray.Any(item => item.Contains($"{product.id}|")))
+                        string[] cartItemParts = cartItemsArray[i].Split('|');
+                        if (cartItemParts.Length >= 1)
                         {
-
-                            var ProductImage = product.ProductImage != null ? Convert.ToBase64String(product.ProductImage) : null;
-
-                            /*var ProductImage = Convert.ToBase64String(product.ProductImage);*/
-                            // Add the product to the cart items in the format "productId|productName|productPrice"
-                            cartItems += $"{product.id}|{product.ProductName}|{product.ProductPrice}|{ProductImage},";
-
-                            // Update the cart cookie
-                            cartCookie.Value = cartItems;
-                            cartCookie.Expires = DateTime.Now.AddDays(7);
-                            Response.Cookies.Add(cartCookie);
+                            if (int.TryParse(cartItemParts[0], out int productId))
+                            {
+                                if (productId == product.id)
+                                {
+                                    int quantity = cartItemParts.Length >= 4 ? int.Parse(cartItemParts[3]) : 0;
+                                    quantity++;
+                                    cartItemParts[3] = quantity.ToString();
+                                    cartItemsArray[i] = string.Join("|", cartItemParts);
+                                    productExistsInCart = true;
+                                }
+                            }
                         }
-                    }
-                    else
+                    }*/
+
+                    if (!productExistsInCart)
                     {
-                        // If cartItems is empty, just add the current product
-                        cartItems = $"{product.id}|{product.ProductName}|{product.ProductPrice},";
-                        cartCookie.Value = cartItems;
-                        cartCookie.Expires = DateTime.Now.AddDays(7);
-                        Response.Cookies.Add(cartCookie);
+                        int quantity = 1;
+                        
+                        cartItems += $"{product.id}|{product.ProductName}|{product.ProductPrice}|{quantity},";
                     }
+                    
+
+                    cartCookie.Value = cartItems;
+                    cartCookie.Expires = DateTime.Now.AddDays(7);
+                    Response.Cookies.Add(cartCookie);
                 }
             }
 
             return RedirectToAction("CustomerHome");
         }
 
+
+
+
+
+
         [Logged]
         public ActionResult Cart()
         {
-            // Get all cookies with names starting with "CartItems_"
-            var cartCookies = Request.Cookies.AllKeys
-                .Where(key => key.StartsWith("CartItems_"))
-                .Select(key => Request.Cookies[key])
-                .ToList();
+            var cartItemsList = new List<string>();
+            var totalQuantity = 0;
+            var cookieName = "CartItems";
+            var cartCookie = Request.Cookies[cookieName];
 
-            List<string> cartItemsList = new List<string>();
-
-            // Retrieve cart items from all matching cookies
-            foreach (var cartCookie in cartCookies)
+            if (cartCookie != null)
             {
                 string cartItems = cartCookie.Value;
-                cartItemsList.AddRange(cartItems.Split(','));
+                string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var item in cartItemsArray)
+                {
+                    cartItemsList.Add(item);
+                    string[] cartItemParts = item.Split('|');
+                    if (cartItemParts.Length >= 4 && int.TryParse(cartItemParts[3], out int quantity))
+                    {
+                        totalQuantity += quantity;
+                    }
+                }
             }
 
+            ViewBag.TotalQuantity = totalQuantity;
             return View(cartItemsList);
         }
+
+
+
+        [HttpPost]
+        public JsonResult UpdateCartItem(int productId, int quantity)
+        {
+            // Update the cart items in cookies based on the productId and new quantity
+            string cookieName = "CartItems";
+            HttpCookie cartCookie = Request.Cookies[cookieName];
+
+            if (cartCookie != null)
+            {
+                string cartItems = cartCookie.Value;
+                string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < cartItemsArray.Length; i++)
+                {
+                    string[] cartItemParts = cartItemsArray[i].Split('|');
+                    if (cartItemParts.Length >= 4)
+                    {
+                        if (int.TryParse(cartItemParts[0], out int id) && id == productId)
+                        {
+                            // Update the quantity
+                            cartItemParts[3] = quantity.ToString();
+                            cartItemsArray[i] = string.Join("|", cartItemParts);
+                            break;  // We found the item, so we can exit the loop
+                        }
+                    }
+                }
+
+                // Update the cart cookie with the modified cart items
+                cartCookie.Value = string.Join(",", cartItemsArray);
+                Response.Cookies.Add(cartCookie);
+            }
+
+            // You can add additional logic or validation here if needed
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public JsonResult RemoveCartItem(int productId)
+        {
+            // Remove the item from the cart cookies
+            string cookieName = "CartItems";
+            HttpCookie cartCookie = Request.Cookies[cookieName];
+
+            if (cartCookie != null)
+            {
+                string cartItems = cartCookie.Value;
+                string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                cartItemsArray = cartItemsArray
+                    .Where(item =>
+                    {
+                        string[] cartItemParts = item.Split('|');
+                        if (cartItemParts.Length >= 1)
+                        {
+                            if (int.TryParse(cartItemParts[0], out int id))
+                            {
+                                return id != productId;
+                            }
+                        }
+                        return true;
+                    })
+                    .ToArray();
+
+                // Update the cart cookie with the modified cart items
+                cartCookie.Value = string.Join(",", cartItemsArray);
+                Response.Cookies.Add(cartCookie);
+            }
+
+            // You can add additional logic or validation here if needed
+
+            return Json(new { success = true });
+        }
+
 
 
 
         [Logged]
         public ActionResult DeleteCartItem(int id)
         {
-            // Find and remove the item with the specified ID
-            var cartItems = new List<string>();
+            string cookieName = "CartItems";
+            HttpCookie cartCookie = Request.Cookies[cookieName];
 
-            foreach (var cookieName in Request.Cookies.AllKeys)
+            if (cartCookie != null)
             {
-                if (cookieName.StartsWith("CartItems_"))
-                {
-                    HttpCookie cookie = Request.Cookies[cookieName];
-                    string items = cookie.Value;
-                    cartItems.AddRange(items.Split(','));
-                }
-            }
+                string cartItems = cartCookie.Value;
+                string[] cartItemsArray = cartItems.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Filter out the item with the specified ID
-            cartItems = cartItems.Where(item =>
-            {
-                string[] cartItemParts = item.Split('|');
-                if (cartItemParts.Length >= 1)
-                {
-                    if (int.TryParse(cartItemParts[0], out int productId))
+                cartItemsArray = cartItemsArray
+                    .Where(item =>
                     {
-                        return productId != id;
-                    }
-                }
-                return false;
-            }).ToList();
+                        string[] cartItemParts = item.Split('|');
+                        if (cartItemParts.Length >= 1)
+                        {
+                            if (int.TryParse(cartItemParts[0], out int productId))
+                            {
+                                return productId != id;
+                            }
+                        }
+                        return true;
+                    })
+                    .ToArray();
 
-            // Clear and update the cart cookies
-            foreach (var cookieName in Request.Cookies.AllKeys)
-            {
-                if (cookieName.StartsWith("CartItems_"))
-                {
-                    HttpCookie cartCookie = Request.Cookies[cookieName];
-                    cartCookie.Expires = DateTime.Now.AddDays(-1);
-                    Response.Cookies.Add(cartCookie);
-                }
-            }
-
-            // Re-add the remaining cart items to the cookies
-            foreach (var item in cartItems)
-            {
-                string[] cartItemParts = item.Split('|');
-                if (cartItemParts.Length >= 3)
-                {
-                    var productID = cartItemParts[0];
-                    var productName = cartItemParts[1];
-                    var productPrice = cartItemParts[2];
-
-                    string cookieName = "CartItems_" + productID;
-                    HttpCookie cartCookie = new HttpCookie(cookieName);
-                    cartCookie.Value = productID + "|" + productName + "|" + productPrice;
-                    cartCookie.Expires = DateTime.Now.AddDays(7);
-                    Response.Cookies.Add(cartCookie);
-                }
+                // Update the cart cookie with the modified cart items
+                cartCookie.Value = string.Join(",", cartItemsArray);
+                cartCookie.Expires = DateTime.Now.AddDays(7);
+                Response.Cookies.Add(cartCookie);
             }
 
             return RedirectToAction("Cart");
         }
+
 
 
 
@@ -228,14 +296,13 @@ namespace Ecommerce.Controllers
                 List<string> cartItems = new List<string>();
 
                 // Retrieve the cart items from cookies
-                foreach (var cookieName in Request.Cookies.AllKeys)
+                var cartCookieName = "CartItems";
+                var cartCookie = Request.Cookies[cartCookieName];
+
+                if (cartCookie != null)
                 {
-                    if (cookieName.StartsWith("CartItems_"))
-                    {
-                        HttpCookie cookie = Request.Cookies[cookieName];
-                        string items = cookie.Value;
-                        cartItems.AddRange(items.Split(','));
-                    }
+                    string cartItemsCookieValue = cartCookie.Value;
+                    cartItems.AddRange(cartItemsCookieValue.Split(','));
                 }
 
                 // Insert orders into the database
@@ -244,13 +311,14 @@ namespace Ecommerce.Controllers
                     string[] cartItemParts = item.Split('|');
                     if (cartItemParts.Length >= 1)
                     {
-                        if (int.TryParse(cartItemParts[0], out int productId))
+                        if (int.TryParse(cartItemParts[0], out int productId) && int.TryParse(cartItemParts[3], out int quantity))
                         {
                             // Create a new order and set the customer and product IDs
                             var newOrder = new Order
                             {
                                 CustomerId = customerProfile.id,
                                 ProductId = productId,
+                                Quantity = quantity, // Set the order quantity
                                 Status = "Processing"
                             };
 
@@ -260,25 +328,19 @@ namespace Ecommerce.Controllers
                     }
                 }
 
-                // Clear the cart by removing cart item cookies
-                foreach (var cookieName in Request.Cookies.AllKeys)
-                {
-                    if (cookieName.StartsWith("CartItems_"))
-                    {
-                        HttpCookie cartCookie = Request.Cookies[cookieName];
-                        cartCookie.Expires = DateTime.Now.AddDays(-1);
-                        Response.Cookies.Add(cartCookie);
-                    }
+                // Save changes to the database
+                db.SaveChanges();
 
-                    // Save changes to the database
-                    db.SaveChanges();
-                }
+                // Clear the cart by removing the cart cookie
+                cartCookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cartCookie);
 
                 // You can add order processing logic here if needed
 
                 return View(); // Redirect to an order confirmation view
             }
         }
+
 
 
         [Logged]

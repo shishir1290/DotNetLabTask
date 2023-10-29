@@ -4,7 +4,7 @@
     ViewBag.Title = "CustomerHome";
 }
 
-<h2>Index</h2>
+<h2>Customer Home</h2>
 
 <table class="table">
     <tr>
@@ -12,7 +12,7 @@
             @Html.DisplayNameFor(model => model.id)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ProductImage)
+            Product Image
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ProductName)
@@ -22,6 +22,9 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ProductPrice)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantity)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Category1.CategoryName)
@@ -38,7 +41,7 @@
             <td width="15%">
                 @if (item.ProductImage != null && item.ProductImage.Length > 0)
                 {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ProductImage)" width="70%" height="70%"/>
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ProductImage)" width="70%" height="70%" />
                 }
                 else
                 {
@@ -48,11 +51,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ProductName)
             </td>
-            <td width="30%">
+            <td width="25%">
                 @Html.DisplayFor(modelItem => item.ProductDetails)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductPrice)
+            <td width="10%">
+                @Html.DisplayFor(modelItem => item.ProductPrice) TK
+            </td>
+            <td width="10%">
+                @Html.DisplayFor(modelItem => item.Quantity) Pieces
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Category1.CategoryName)
@@ -63,5 +69,4 @@
             </td>
         </tr>
     }
-
 </table>

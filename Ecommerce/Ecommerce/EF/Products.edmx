@@ -20,6 +20,7 @@
           <Property Name="CustomerId" Type="int" Nullable="false" />
           <Property Name="ProductId" Type="int" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Quantity" Type="int" />
         </EntityType>
         <EntityType Name="Products">
           <Key>
@@ -30,7 +31,8 @@
           <Property Name="ProductDetails" Type="nvarchar(max)" Nullable="false" />
           <Property Name="ProductPrice" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="category" Type="int" Nullable="false" />
-          <Property Name="ProductImage" Type="varbinary(max)" />
+          <Property Name="ProductImage" Type="varbinary(max)" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -137,6 +139,7 @@
           <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Product" Relationship="Self.FK_Orders_Products" FromRole="Orders" ToRole="Products" />
           <NavigationProperty Name="User" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
+          <Property Name="Quantity" Type="Int32" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -149,7 +152,8 @@
           <Property Name="category" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Category1" Relationship="Self.FK_Product_Category" FromRole="Products" ToRole="Categorys" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Products" FromRole="Products" ToRole="Orders" />
-          <Property Name="ProductImage" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="ProductImage" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -254,6 +258,7 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="ProductModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
@@ -264,6 +269,7 @@
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="ProductModel.Product">
               <MappingFragment StoreEntitySet="Products">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="ProductImage" ColumnName="ProductImage" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="ProductName" ColumnName="ProductName" />

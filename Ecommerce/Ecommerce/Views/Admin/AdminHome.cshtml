@@ -1,19 +1,28 @@
 ﻿@model IEnumerable<Ecommerce.EF.Order>
+@using Ecommerce.EF;
 
 @{
     ViewBag.Title = "AdminHome";
-    var errorMessage = TempData["ErrorMessage"] as string;
 }
 
 <h2>AdminHome</h2>
 
 <table class="table">
-    <tr>
+    <tr align="center">
         <th>
-            @Html.DisplayNameFor(model => model.CustomerId)
+            Products
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ProductId)
+            Products Name
+        </th>
+        <th>
+            Customer Name
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Quantity)
+        </th>
+        <th>
+            Total Amount
         </th>
 
         <th>
@@ -23,28 +32,74 @@
     </tr>
     @foreach (var order in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => order.CustomerId)
-            </td>
-            <td>
-                @Html.DisplayFor(model => order.ProductId)
-            </td>
+        var db = new ProductEntities3();
+        var product = db.Products.FirstOrDefault(p => p.id == order.ProductId);
+        var customer = db.Users.FirstOrDefault(u => u.id == order.CustomerId);
 
-            <td>
-                @Html.DisplayFor(model => order.Status)
+        <tr>
+            <td width="20%" align="center">
+                @if (product.ProductImage != null && product.ProductImage.Length > 0)
+                {
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.ProductImage)" width="60%" height="60%" />
+                }
+                else
+                {
+                    <p>No image available</p>
+                }
+            </td>
+            <td align="center" width="10%">
+                @product.ProductName
+            </td>
+            <td align="center" width="10%">
+                @customer.Name
+            </td>
+            <td align="center" width="10%">
+                @Html.DisplayFor(model => order.Quantity)
+            </td>
+            <td align="center" width="10%">
+                @(product.ProductPrice * order.Quantity) TK
+            </td>
+            <td width="9%">
+                <div align="center">
+                    @if (order.Status == "Processing")
+                    {
+                        <div class="alert alert-dark">
+                            @Html.DisplayFor(model => order.Status)
+                        </div>
+                    }
+                    else if (order.Status == "Approved")
+                    {
+                        <div class="alert alert-success">
+                            @Html.DisplayFor(model => order.Status)
+                        </div>
+                    }
+                    else if (order.Status == "Refused")
+                    {
+                        <div class="alert alert-danger">
+                            @Html.DisplayFor(model => order.Status)
+                        </div>
+                    }
+                </div>
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(errorMessage))
+                @if (order.Status == "Approved" && TempData["ApprovedErrorMessage"] != null)
                 {
                     <div class="alert alert-danger">
-                        @errorMessage
+                        @TempData["ApprovedErrorMessage"]
                     </div>
                 }
             </td>
             <td>
-                @Html.ActionLink("Approve", "UpdateOrderStatus", new { id = order.id }, new { @class = "btn btn-success" })
-
+                @if (order.Status == "Refused" && TempData["RefusedErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["RefusedErrorMessage"]
+                    </div>
+                }
+            </td>
+            <td>
+                @Html.ActionLink("Approve", "UpdateOrderStatus", "Admin", new { id = order.id, value = "Approved" }, new { @class = "btn btn-success" }) |
+                @Html.ActionLink("Refuse", "UpdateOrderStatus", "Admin", new { id = order.id, value = "Refused" }, new { @class = "btn btn-success" })
             </td>
         </tr>
     }
