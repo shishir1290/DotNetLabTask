@@ -4,27 +4,54 @@
     ViewBag.Title = "UserProfile";
 }
 
-<h2>Customer Profile</h2>
+<h2 align="center">Customer Profile</h2>
 
-<table class="table">
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Name)</th>
-        <td>@Html.DisplayFor(model => model.Name)</td>
-    </tr>
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Email)</th>
-        <td>@Html.DisplayFor(model => model.Email)</td>
-    </tr>
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Phone)</th>
-        <td>@Html.DisplayFor(model => model.Phone)</td>
-    </tr>
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Address)</th>
-        <td>@Html.DisplayFor(model => model.Address)</td>
-    </tr>
-    <tr>
-        <th>@Html.DisplayNameFor(model => model.Gender)</th>
-        <td>@Html.DisplayFor(model => model.Gender)</td>
-    </tr>
-</table>
+<div class="profile-container">
+    <div class="profile-section">
+        <div class="profile-label">Name:</div>
+        <div class="profile-value">@Html.DisplayFor(model => model.Name)</div>
+    </div>
+    <div class="profile-section">
+        <div class="profile-label">Email:</div>
+        <div class="profile-value">@Html.DisplayFor(model => model.Email)</div>
+    </div>
+    <div class="profile-section">
+        <div class="profile-label">Phone:</div>
+        <div class="profile-value">@Html.DisplayFor(model => model.Phone)</div>
+    </div>
+    <div class="profile-section">
+        <div class="profile-label">Address:</div>
+        <div class="profile-value">@Html.DisplayFor(model => model.Address)</div>
+    </div>
+    <div class="profile-section">
+        <div class="profile-label">Gender:</div>
+        <div class="profile-value">@Html.DisplayFor(model => model.Gender)</div>
+    </div>
+</div>
+
+<style>
+    .profile-container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .profile-section {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .profile-label {
+        font-weight: bold;
+        flex: 1;
+    }
+
+    .profile-value {
+        flex: 2;
+    }
+</style>

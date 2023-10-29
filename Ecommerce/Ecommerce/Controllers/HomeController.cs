@@ -40,7 +40,7 @@ namespace Ecommerce.Controllers
         public ActionResult UserProfile()
         {
             // Get the customer's email from the session
-            string customerEmail = Session["CustomerEmail"] as string;
+            string customerEmail = Session["UserEmail"] as string;
 
             if (string.IsNullOrEmpty(customerEmail))
             {

@@ -7,10 +7,8 @@
 <h2>Customer Home</h2>
 
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.id)
-        </th>
+    <tr align="center">
+        
         <th>
             Product Image
         </th>
@@ -34,10 +32,8 @@
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.id)
-            </td>
+        <tr align="center">
+            
             <td width="15%">
                 @if (item.ProductImage != null && item.ProductImage.Length > 0)
                 {

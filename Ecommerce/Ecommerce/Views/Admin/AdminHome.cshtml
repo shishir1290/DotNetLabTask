@@ -28,7 +28,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Status)
         </th>
-        <th></th>
+        <th width="10%"></th>
     </tr>
     @foreach (var order in Model)
     {
@@ -88,8 +88,6 @@
                         @TempData["ApprovedErrorMessage"]
                     </div>
                 }
-            </td>
-            <td>
                 @if (order.Status == "Refused" && TempData["RefusedErrorMessage"] != null)
                 {
                     <div class="alert alert-danger">

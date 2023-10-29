@@ -13,7 +13,7 @@
 }
 
 <table class="table">
-    <tr>
+    <tr align="center">
         <th>
             Product Image
         </th>
@@ -40,21 +40,21 @@
         var db = new ProductEntities3();
         var product = db.Products.FirstOrDefault(p => p.id == order.ProductId);
 
-        <tr>
-            <td width="30%">
+        <tr align="center">
+            <td width="25%">
                 @if (product.ProductImage != null && product.ProductImage.Length > 0)
                 {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.ProductImage)" width="40%" height="40%" />
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(product.ProductImage)" width="60%" height="60%" title="@product.ProductName" />
                 }
                 else
                 {
                     <p>No image available</p>
                 }
             </td>
-            <td width="30%">
+            <td width="20%">
                 @product.ProductName
             </td>
-            <td width="15%">
+            <td width="10%">
                 @product.ProductPrice TK
             </td>
             <td width="10%">
@@ -66,8 +66,8 @@
             </td>
 
 
-            <td width="20%">
-                <div>
+            <td width="10%">
+                <div align="center">
                     @if (order.Status == "Processing")
                     {
                         <div class="alert alert-dark">
@@ -77,6 +77,12 @@
                     else if (order.Status == "Approved")
                     {
                         <div class="alert alert-success">
+                            @Html.DisplayFor(model => order.Status)
+                        </div>
+                    }
+                    else if (order.Status == "Refused")
+                    {
+                        <div class="alert alert-danger">
                             @Html.DisplayFor(model => order.Status)
                         </div>
                     }
