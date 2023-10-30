@@ -4,65 +4,58 @@
     ViewBag.Title = "CustomerHome";
 }
 
+<style>
+    .product-card {
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        transition: 0.3s;
+        margin: 10px;
+        padding: 10px;
+    }
+
+        .product-card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+    .product-image {
+        width: 100%;
+        text-align: center;
+    }
+
+        .product-image img {
+            max-width: 100%;
+            height: auto;
+            width: 100%; /* Ensure all images have the same width */
+            max-height: 200px; /* Set a maximum height to maintain aspect ratio */
+        }
+</style>
+
 <h2>Customer Home</h2>
 
-<table class="table">
-    <tr align="center">
-        
-        <th>
-            Product Image
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ProductName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ProductDetails)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ProductPrice)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Quantity)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Category1.CategoryName)
-        </th>
-        <th></th>
-    </tr>
-
+<div class="row">
     @foreach (var item in Model)
     {
-        <tr align="center">
-            
-            <td width="15%">
-                @if (item.ProductImage != null && item.ProductImage.Length > 0)
-                {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ProductImage)" width="70%" height="70%" />
-                }
-                else
-                {
-                    <p>No image available</p>
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductName)
-            </td>
-            <td width="25%">
-                @Html.DisplayFor(modelItem => item.ProductDetails)
-            </td>
-            <td width="10%">
-                @Html.DisplayFor(modelItem => item.ProductPrice) TK
-            </td>
-            <td width="10%">
-                @Html.DisplayFor(modelItem => item.Quantity) Pieces
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category1.CategoryName)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-success" }) |
-                @Html.ActionLink("Add to Cart", "AddToCart", new { id = item.id }, new { @class = "btn btn-success" })
-            </td>
-        </tr>
+        <div class="col-md-4">
+            <div class="product-card">
+                <div class="product-image">
+                    @if (item.ProductImage != null && item.ProductImage.Length > 0)
+                    {
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(item.ProductImage)" class="img-responsive" />
+                    }
+                    else
+                    {
+                        <p>No image available</p>
+                    }
+                </div>
+                <div class="product-details">
+                    <h4>@Html.DisplayFor(modelItem => item.ProductName)</h4>
+                    <p>@Html.DisplayFor(modelItem => item.ProductPrice) TK</p>
+                </div>
+                <div>
+                    @Html.ActionLink("Details", "Details", new { id = item.id }, new { @class = "btn btn-success" })
+                    @Html.ActionLink("Add to Cart", "AddToCart", new { id = item.id }, new { @class = "btn btn-success" })
+                </div>
+            </div>
+        </div>
     }
-</table>
+</div>
