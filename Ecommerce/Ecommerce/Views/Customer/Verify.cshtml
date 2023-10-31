@@ -1,0 +1,41 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "Verify";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>Verify Email</h2>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("Verification Code", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("code", Model, new { @class = "form-control" })
+                @Html.ValidationMessage("code", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @*<div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Verify" class="btn btn-primary" />
+            </div>*@
+            <div class="form-group">
+                <br />
+                <div class="col-md-offset-2 col-md-10" style="padding-left: 20px;">
+                    <input type="submit" value="Verify" style="width: 200px; height: 45px; border-radius: 20px; background: rgba(176, 186, 195, 0.40); font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 500; " />
+                </div>
+            </div>
+            <div>
+                <br />
+                <a href="@Url.Action("Signup", "Customer")" style="width: 280px; height: 45px; border-radius: 30px 20px; background: rgba(51, 182, 80, 0.64); " class="btn">
+                    <p align="center" style="width: 240px; height: 24px; color: #000; font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 400; line-height: normal; ">
+                        Back to Signup
+                    </p>
+                </a>
+            </div>
+        </div>
+    </div>
+}

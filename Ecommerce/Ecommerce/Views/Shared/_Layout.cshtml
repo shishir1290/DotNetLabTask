@@ -1,14 +1,15 @@
 ﻿@using Ecommerce.EF;
 
 @{
-    var customerEmail = Session["UserEmail"] as string;
+    var UserEmail = Session["UserEmail"] as string;
+    var Password = Session["Password"] as string;
     string userType = "";
 
-    if (customerEmail != null)
+    if (UserEmail != null && Password != null)
     {
         using (var db = new ProductEntities3()) // Instantiate the database context
         {
-            var user = db.Users.SingleOrDefault(u => u.Email == customerEmail);
+            var user = db.Users.SingleOrDefault(u => u.Email == UserEmail);
 
             if (user != null)
             {

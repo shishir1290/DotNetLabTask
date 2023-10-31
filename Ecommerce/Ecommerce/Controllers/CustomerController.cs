@@ -3,6 +3,11 @@ using Ecommerce.Models;
 using System.Linq;
 using BCrypt.Net;
 using System.Web.Mvc;
+using System.Net.Mail;
+using System.Net;
+using System;
+using System.Web;
+using System.Net.Http;
 
 namespace Ecommerce.Controllers
 {
@@ -22,13 +27,6 @@ namespace Ecommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Check if the email already exists in the database
-                /*if (db.Users.Any(u => u.Email == user.Email))
-                {
-                    ModelState.AddModelError("Email", "Email already in use. Please use a different email.");
-                    return View(user);
-                }*/
-
                 // Hash the password using BCrypt with automatic salt
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
@@ -39,17 +37,104 @@ namespace Ecommerce.Controllers
                     Phone = user.Phone,
                     Gender = user.Gender,
                     Address = user.Address,
-                    Password = hashedPassword, // Store the hashed password in the database
+                    Password = hashedPassword,
                     UserType = user.UserType
                 };
+
+                Session["UserEmail"] = user.Email;
 
                 db.Users.Add(newUser);
                 db.SaveChanges();
 
-                return RedirectToAction("Login"); // Redirect to the desired action after a successful signup
+                // Generate and send verification code
+                string verificationCode = GenerateRandomCode();
+                SendVerificationCode(user.Email, verificationCode);
+
+                // Store verification code in a cookie
+                Response.Cookies["VerificationCode"].Value = verificationCode;
+                Response.Cookies["VerificationCode"].Expires = DateTime.Now.AddMinutes(5);
+
+                // Redirect to the Verify action with the email parameter
+                return RedirectToAction("Verify");
             }
 
             return View(user);
+        }
+
+
+        [HttpGet]
+        public ActionResult Verify()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Verify(string code)
+        {
+            string storedCode = Request.Cookies["VerificationCode"]?.Value;
+
+            if (string.IsNullOrEmpty(storedCode) || storedCode != code)
+            {
+                ModelState.AddModelError("", "Invalid verification code. Please try again.");
+                // If the verification code is wrong, delete the user's information from the database
+                var userEmail = Session["UserEmail"] as string;
+                if (userEmail != null)
+                {
+                    var userToDelete = db.Users.FirstOrDefault(u => u.Email == userEmail);
+                    if (userToDelete != null)
+                    {
+                        db.Users.Remove(userToDelete);
+                        db.SaveChanges();
+                        Session.Clear(); // Clear the session
+                        return RedirectToAction("Signup");
+                    }
+                    
+                }
+                return View();
+            }
+
+            // Code is valid, remove the cookie and proceed
+            Response.Cookies["VerificationCode"].Expires = DateTime.Now.AddMinutes(-1);
+
+            // Save user information to the database
+
+            return RedirectToAction("Login");
+        }
+
+
+        // Helper method to generate a random 6-digit code
+        private string GenerateRandomCode()
+        {
+            Random random = new Random();
+            return random.Next(100000, 999999).ToString();
+        }
+
+        // Helper method to send verification code via email
+        private void SendVerificationCode(string email, string code)
+        {
+            // Configure your email settings (SMTP server, credentials, etc.) here
+            // SMTP server for Gmail example provided
+            string smtpServer = "smtp.gmail.com";
+            int smtpPort = 587;
+            string smtpUsername = "sadmanurshishir1290@gmail.com";
+            string smtpPassword = "Your_Gmail_App_Password";
+
+            SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort)
+            {
+                Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+                EnableSsl = true
+            };
+
+            MailMessage mailMessage = new MailMessage
+            {
+                From = new MailAddress("sadmanurshishir1290@gmail.com"),
+                Subject = "Email Verification Code",
+                Body = "Your verification code: " + code
+            };
+            mailMessage.To.Add(email);
+
+            smtpClient.Send(mailMessage);
         }
 
         [HttpGet]
@@ -69,6 +154,7 @@ namespace Ecommerce.Controllers
                 {
                     // Authentication successful
                     Session["UserEmail"] = user.Email;
+                    Session["Password"] = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
                     // Check the user type and redirect accordingly
                     if (user.UserType == "Customer")
