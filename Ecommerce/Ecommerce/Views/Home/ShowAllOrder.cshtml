@@ -29,13 +29,13 @@
         <th>
             Total Price
         </th>
-
         <th>
             @Html.DisplayNameFor(model => model.Status)
         </th>
         <th></th>
     </tr>
-    @foreach (var order in Model)
+
+    @foreach (var order in Model.OrderByDescending(o => o.Date)) // Sort orders from newest to oldest
     {
         var db = new ProductEntities3();
         var product = db.Products.FirstOrDefault(p => p.id == order.ProductId);
@@ -60,12 +60,9 @@
             <td width="10%">
                 @order.Quantity
             </td>
-
             <td width="20%">
                 @(product.ProductPrice * order.Quantity) TK
             </td>
-
-
             <td width="10%">
                 <div align="center">
                     @if (order.Status == "Processing")
@@ -91,5 +88,3 @@
         </tr>
     }
 </table>
-
-

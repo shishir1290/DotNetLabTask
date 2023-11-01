@@ -16,6 +16,7 @@
     <Property Name="ProductId" Type="int" Nullable="false" />
     <Property Name="Status" Type="varchar" MaxLength="50" Nullable="false" />
     <Property Name="Quantity" Type="int" />
+    <Property Name="Date" Type="datetime" />
   </EntityType>
   <EntityType Name="Products">
     <Key>

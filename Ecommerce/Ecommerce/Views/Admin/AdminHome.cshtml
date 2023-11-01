@@ -24,13 +24,12 @@
         <th>
             Total Amount
         </th>
-
         <th>
             @Html.DisplayNameFor(model => model.Status)
         </th>
         <th width="10%"></th>
     </tr>
-    @foreach (var order in Model)
+    @foreach (var order in Model.OrderByDescending(o => o.Date)) // Sort orders from newest to oldest
     {
         var db = new ProductEntities3();
         var product = db.Products.FirstOrDefault(p => p.id == order.ProductId);

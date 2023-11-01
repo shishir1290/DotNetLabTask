@@ -21,6 +21,7 @@
           <Property Name="ProductId" Type="int" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Quantity" Type="int" />
+          <Property Name="Date" Type="datetime" />
         </EntityType>
         <EntityType Name="Products">
           <Key>
@@ -140,6 +141,7 @@
           <NavigationProperty Name="Product" Relationship="Self.FK_Orders_Products" FromRole="Orders" ToRole="Products" />
           <NavigationProperty Name="User" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
           <Property Name="Quantity" Type="Int32" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Product">
           <Key>
@@ -258,6 +260,7 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="ProductModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="Quantity" ColumnName="Quantity" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />

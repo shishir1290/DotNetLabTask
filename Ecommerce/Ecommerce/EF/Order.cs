@@ -19,6 +19,7 @@ namespace Ecommerce.EF
         public int ProductId { get; set; }
         public string Status { get; set; }
         public Nullable<int> Quantity { get; set; }
+        public Nullable<System.DateTime> Date { get; set; }
     
         public virtual Product Product { get; set; }
         public virtual User User { get; set; }

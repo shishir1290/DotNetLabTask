@@ -319,7 +319,8 @@ namespace Ecommerce.Controllers
                                 CustomerId = customerProfile.id,
                                 ProductId = productId,
                                 Quantity = quantity, // Set the order quantity
-                                Status = "Processing"
+                                Status = "Processing",
+                                Date = DateTime.Now,
                             };
 
                             // Save the order to the database

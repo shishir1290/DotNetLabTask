@@ -52,7 +52,7 @@ namespace Ecommerce.Controllers
 
                 // Store verification code in a cookie
                 Response.Cookies["VerificationCode"].Value = verificationCode;
-                Response.Cookies["VerificationCode"].Expires = DateTime.Now.AddMinutes(5);
+                Response.Cookies["VerificationCode"].Expires = DateTime.Now.AddMinutes(3);
 
                 // Redirect to the Verify action with the email parameter
                 return RedirectToAction("Verify");
@@ -82,25 +82,35 @@ namespace Ecommerce.Controllers
                 if (userEmail != null)
                 {
                     var userToDelete = db.Users.FirstOrDefault(u => u.Email == userEmail);
-                    if (userToDelete != null)
+                    if (Request.Cookies["VerificationCode"] != null)
                     {
-                        db.Users.Remove(userToDelete);
-                        db.SaveChanges();
-                        Session.Clear(); // Clear the session
-                        return RedirectToAction("Signup");
+                        HttpCookie verificationCookie = Request.Cookies["VerificationCode"];
+                        if (verificationCookie.Expires < DateTime.Now)
+                        {
+                            // Cookie has expired
+                            if (userToDelete != null)
+                            {
+                                db.Users.Remove(userToDelete);
+                                db.SaveChanges();
+                            }
+                            Session.Clear(); // Clear the session
+                            return RedirectToAction("Signup");
+                        }
                     }
-                    
                 }
                 return View();
             }
 
+
             // Code is valid, remove the cookie and proceed
-            Response.Cookies["VerificationCode"].Expires = DateTime.Now.AddMinutes(-1);
 
             // Save user information to the database
 
             return RedirectToAction("Login");
         }
+
+
+
 
 
         // Helper method to generate a random 6-digit code
@@ -129,12 +139,65 @@ namespace Ecommerce.Controllers
             MailMessage mailMessage = new MailMessage
             {
                 From = new MailAddress("sadmanurshishir1290@gmail.com"),
-                Subject = "Email Verification Code",
-                Body = "Your verification code: " + code
+                Subject = "Verification Code [" + code +"]",
+                IsBodyHtml = true, // Set this to render the email as HTML
+                Body = @"
+    <!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .email-content {
+            padding: 20px;
+        }
+        .verification-code {
+            font-weight: bold;
+            background-color: 679596;
+            padding: 10px;
+            border: 1px solid #005aa7;
+            display: inline-block;
+            color: #000;
+            font-size: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>Your Verification Code</h1>
+        <div class='email-content'>
+            <p>Welcome to our Ecommerce site! To complete your registration, please enter the verification code below:</p>
+            <div align='center'>
+                <p class='verification-code' align='center'>" + code + @"</p>
+            </div>
+            <p>If you did not sign up for our service, you can safely ignore this email.</p>
+            <p>Thank you for choosing our Ecommerce platform!</p>
+        </div>
+    </div>
+</body>
+</html>
+"
             };
             mailMessage.To.Add(email);
 
             smtpClient.Send(mailMessage);
+
         }
 
         [HttpGet]
