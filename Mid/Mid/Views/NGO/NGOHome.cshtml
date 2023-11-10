@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Mid.EF.FoodItem>
+@using Mid.EF;
+
+@{
+    ViewBag.Title = "NGOHome";
+}
+
+<h2>NGO<</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr align="center">
+                <th width="10%">Food Name</th>
+                <th width="10%">Quantity</th>
+                <th width="10%">Preserve Time</th>
+                <th width="10%">Restaurant Name</th>
+                <th width="8%">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var db = new FoodEntities5();
+                var foodTrackes = db.FoodTrackes.FirstOrDefault(f => f.FoodItemsId == item.id);
+                if (foodTrackes != null && foodTrackes.RestaurantId != null)
+                {
+                    var restaurant = db.Restaurants.FirstOrDefault(r => r.id == foodTrackes.RestaurantId);
+
+                    <tr align="center">
+                        <td width="10%">@Html.DisplayFor(modelItem => item.name)</td>
+                        <td width="10%">@Html.DisplayFor(modelItem => item.quantity)</td>
+                        <td width="10%">@Html.DisplayFor(modelItem => item.preserve_time)</td>
+                        <td width="10%">@restaurant.name</td>
+                        <td width="8%">
+                            <div class="alert @GetStatusAlertClass(foodTrackes.status)">
+                                @Html.DisplayFor(model => foodTrackes.status)
+                            </div>
+                        </td>
+                        <td width="10%">
+                            @if (foodTrackes.status == "Assigned")
+                            {
+                                @Html.ActionLink("Accept", "UpdateOrderStatus", "NGO", new { id = foodTrackes.id, value = "Accept" }, new { @class = "btn btn-primary" })
+                                <p> </p>
+                                @Html.ActionLink("Reject", "UpdateOrderStatus", "NGO", new { id = foodTrackes.id, value = "Reject" }, new { @class = "btn btn-danger" });
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@helper GetStatusAlertClass(string status)
+{
+    switch (status)
+    {
+        case "Assigned":
+            @("alert alert-dark")
+            break;
+        case "Collected":
+            @("alert alert-success")
+            break;
+        case "Accept":
+            @("alert alert-primary")
+            break;
+        case "Reject":
+            @("alert alert-danger")
+            break;
+        default:
+            @("alert alert-info")
+            break;
+    }
+}

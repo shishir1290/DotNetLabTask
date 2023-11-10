@@ -1,0 +1,56 @@
+﻿@model string
+
+@{
+    ViewBag.Title = "Verify";
+    var email = ViewBag.Email;
+}
+
+<h2>Verify Email</h2>
+@using (Html.BeginForm())
+{
+    <div class="alert alert-danger" align="center">
+        <p style="font-size: 24px">This Verification code will expire within  <span id="countdown" style="font-size: 20px"></span> minutes.</p>
+
+    </div>
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.Label("Verification Code", new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBox("code", Model, new { @class = "form-control" })
+                @Html.ValidationMessage("code", "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <br />
+            <div class="col-md-offset-2 col-md-10" style="padding-left: 20px;">
+                <input type="submit" value="Verify" style="width: 200px; height: 45px; border-radius: 20px; background: rgba(176, 186, 195, 0.40); font-family: Poppins; font-size: 24px; font-style: normal; font-weight: 500; " />
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var storedCode = '@ViewBag.StoredCode'; // Pass the stored code from the model
+        var countdownElement = document.getElementById('countdown');
+        var remainingTime = 180; // Initial remaining time in seconds
+
+        function updateCountdown() {
+            var minutes = Math.floor(remainingTime / 60);
+            var seconds = remainingTime % 60;
+            countdownElement.innerText =  minutes + ':' + (seconds < 10 ? '0' : '') + seconds ;
+        }
+
+        updateCountdown(); // Initial display
+
+        var countdownInterval = setInterval(function () {
+            remainingTime--;
+            if (remainingTime <= 0) {
+                clearInterval(countdownInterval);
+                // Redirect to the "DeleteAndRedirect" action
+                window.location.href = '@Url.Action("DeleteAndRedirect", "Signup", new { email = email })';
+            } else {
+                updateCountdown(); // Update the displayed countdown
+            }
+        }, 1000); // Update the countdown every 1 second (1000 milliseconds)
+    </script>
+}

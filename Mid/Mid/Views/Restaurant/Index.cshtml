@@ -1,0 +1,66 @@
+﻿@model IEnumerable<Mid.EF.FoodItem>
+@using Mid.EF;
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Food Items</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Food Name</th>
+                <th>Quantity</th>
+                <th>Preserve Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var db = new FoodEntities5();
+                var foodStatusId = db.FoodTrackes.FirstOrDefault(f => f.FoodItemsId == item.id);
+
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.preserve_time)</td>
+                    <td width="10%">
+                        <div align="center">
+                            @if (foodStatusId != null)
+                            {
+                                <div class="alert @GetStatusAlertClass(foodStatusId.status)">
+                                    @Html.DisplayFor(model => foodStatusId.status)
+                                </div>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@helper GetStatusAlertClass(string status)
+{
+    switch (status)
+    {
+        case "Assigned":
+            @("alert alert-dark")
+            break;
+        case "Collected":
+            @("alert alert-success")
+            break;
+        case "Accept":
+            @("alert alert-primary")
+            break;
+        case "Reject":
+            @("alert alert-danger")
+            break;
+        default:
+            @("alert alert-info")
+            break;
+    }
+}
