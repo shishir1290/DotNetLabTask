@@ -31,7 +31,7 @@ namespace Mid.Controllers
             {
                 if (value == "Collect")
                 {
-                    foodTrack.NGOId = employee.id;
+                    foodTrack.EmployeeId = employee.id;
                     foodTrack.collecting_time = DateTime.Now;
                     foodTrack.status = "Collected";
                     db.SaveChanges();

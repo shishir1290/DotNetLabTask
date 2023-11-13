@@ -206,7 +206,7 @@ public class SignupController : Controller
         string smtpServer = "smtp.gmail.com";
         int smtpPort = 587;
         string smtpUsername = "ghoreghore.customer.info@gmail.com";
-        string smtpPassword = "zpur hffp fwlc vmxu";
+        string smtpPassword = "Your gmail app password";
 
         SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort)
         {

@@ -40,7 +40,7 @@
                             </div>
                         </td>
                         <td width="10%">
-                            @if (foodTrackes.status == "Accepted" || foodTrackes.status == "Rejected")
+                            @if (foodTrackes.status == "Accepted")
                             {
                                 @Html.ActionLink("Collect", "UpdateOrderStatus", "Employee", new { id = foodTrackes.id, value = "Collect" }, new { @class = "btn btn-success" })
                             }
